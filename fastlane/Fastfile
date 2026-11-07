@@ -1,0 +1,39 @@
+# fastlane configuration for iOSFoundation.
+#
+# Current state: foundation only. The `ci_build` lane runs today with no
+# Apple account and no signing. The `beta` lane is a placeholder for
+# TestFlight distribution; it activates once Wade has an Apple Developer
+# account and the signing secrets described in README.md are in place.
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Build the app for the iOS Simulator with signing disabled (matches CI)"
+  lane :ci_build do
+    build_app(
+      project: "iOSFoundation.xcodeproj",
+      scheme: "iOSFoundation",
+      configuration: "Debug",
+      destination: "generic/platform=iOS Simulator",
+      skip_codesigning: true,
+      output_directory: "build/fastlane"
+    )
+  end
+
+  desc "Archive and upload to TestFlight (requires Apple Developer account + secrets)"
+  lane :beta do
+    # TODO (activates with Wade's Apple Developer account):
+    # 1. Store the distribution certificate + provisioning profile in a
+    #    private `fastlane match` git repository, referenced by MATCH_GIT_URL.
+    # 2. Add these GitHub repository secrets:
+    #      MATCH_PASSWORD, MATCH_GIT_BASIC_AUTHORIZATION (if the match repo needs it),
+    #      APP_STORE_CONNECT_API_KEY_KEY_ID, APP_STORE_CONNECT_API_KEY_ISSUER_ID,
+    #      APP_STORE_CONNECT_API_KEY_KEY (base64-encoded .p8 contents)
+    # 3. Set DEVELOPMENT_TEAM in the Xcode project to Wade's team ID.
+    # Then implement:
+    #   match(type: "appstore", readonly: true)
+    #   build_app(scheme: "iOSFoundation", export_method: "app-store")
+    #   upload_to_testflight(skip_waiting_for_build_processing: true)
+    UI.user_error!("TestFlight lane is not configured yet. See README.md > Signing and TestFlight.")
+  end
+end
